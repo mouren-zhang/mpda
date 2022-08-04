@@ -1,11 +1,22 @@
 import re
 import glob
-import requests
 from nbt import nbt
+import requests
 
 
+# # 全局变量
+# 文件路径列表
 lis = []
-prmod = 0  
+# 显示模式
+prmod = 0  # 0仅显示数量 1显示数量+uuid
+
+
+# 已完成
+# 本次更新内容，修bug
+# 预定更新日期：2022年8月4日
+
+
+
 
 def updata():
     """
@@ -13,17 +24,28 @@ def updata():
     :return:
     """
 
-    V = 1.13
+
+    V = 1.14
     url = 'https://mouren-zhang.github.io/index.json'
-    
+    # url = 'http://127.0.0.1/mpda/index.json'
+
     headers = {
         'Connection': 'close',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36 Edg/103.0.1264.71'
     }
+
     r = requests.get(url, headers=headers)
+    if r.status_code != 200:
+        return 'no'
+
+    # 版本比对
     Version = r.json().get('mpda', {}).get('Version')
 
+    if Version == None or Version =='':
+        return 'no'
+
     if Version != V:
+        # 有变动
         print('当前版本为', V, '最新版本', Version)
 
         title = r.json().get('mpda', {}).get('title')
@@ -32,8 +54,10 @@ def updata():
         text = r.json().get('mpda', {}).get('text')
         for i in text:
             print(i)
+
         print('#'*10)
-    
+    return 'ok'
+
 def len_uuid(filename):
     """
     从字符串中提取uuid
@@ -50,19 +74,17 @@ def add_w():
     """
 
     global lis
-    
+    # 文件路径
 
     ml = r'playerdata'
-    ml1 = r'D:\Desktop\mc\.minecraft\versions\1.19-Fabric 0.14.8\saves\001\playerdata'
-    ml2 = r'D:\Desktop\py\mc\玩家存档分析\playerdata'
 
-    
-    for filename in glob.glob(ml2 + '\*.dat'):
+    # 获取路径下每个文件的文件路径加入列表
+    for filename in glob.glob(ml + '\*.dat'):
 
-        
+        # 判断文件名长度是否合法 uuid长度不合法的就跳过
         if len(len_uuid(filename)) != 36:
             continue
-        
+        # 合法文件加入列表
         lis.append(filename)
     print('加载数据', len(lis), '个')
 
@@ -85,20 +107,21 @@ def main():
     :return:None
     """
     add_w()
+    list_mod0 = []  # 生存模式
+    list_mod1 = []  # 创造模式
+    list_mod2 = []  # 冒险模式
+    list_mod3 = []  # 旁观模式
 
-    list_mod0 = []  
-    list_mod1 = []  
-    list_mod2 = []  
-    list_mod3 = []
-    
+    # 从列表获取文件路径
     for i in lis:
         nbtfile = nbt.NBTFile(i, 'rb')
         
+        # 转列表
         nbtfile = str(nbtfile)[1:-1].replace(' ', '').replace('{', '').replace('}', '').replace('[', '').replace(']','').split(',')
 
         for ii in range(len(nbtfile)):
             nbtfile[ii] = nbtfile[ii].split(':')
-        
+
         a = dat('playerGameType', nbtfile)
 
         if a == '0':
@@ -110,34 +133,41 @@ def main():
         elif a == '3':
             list_mod3.append(len_uuid(i))
 
-    if prmod == 0:  
+    if prmod == 0:  # 统计模式
 
         data = {
             '生存': str(len(list_mod0)),
             '创造': str(len(list_mod1)),
             '冒险': str(len(list_mod2)),
             '旁观': str(len(list_mod3)),
+
         }
 
-    elif prmod == 1:  
+    elif prmod == 1:  # 筛查模式
 
         data = {
             '生存' + str(len(list_mod0)): list_mod0,
             '创造' + str(len(list_mod1)): list_mod1,
             '冒险' + str(len(list_mod2)): list_mod2,
             '旁观' + str(len(list_mod3)): list_mod3,
+
         }
 
     return data
 
 
 if __name__ == '__main__':
-    updata()
+    try:
+        if updata() == 'no':
+            print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
+    except:
+        print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
+
     print('使用须知\n请不要用本程序去检索热文件，若因为使用不当造成的由使用者承担')
 
     print('0.统计模式\n1.筛查模式')
     a = input('$:')
-    
+    # a = '1'
     if a == '0':
         prmod = 0
     elif a == '1':
