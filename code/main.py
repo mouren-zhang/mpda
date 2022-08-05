@@ -2,20 +2,14 @@ import re
 import glob
 from nbt import nbt
 import requests
-
+import json
 
 # # 全局变量
 # 文件路径列表
 lis = []
 # 显示模式
 prmod = 0  # 0仅显示数量 1显示数量+uuid
-
-
-# 已完成
-# 本次更新内容，修bug
-# 预定更新日期：2022年8月4日
-
-
+data = {}
 
 
 def updata():
@@ -24,8 +18,7 @@ def updata():
     :return:
     """
 
-
-    V = 1.14
+    V = 1.20
     url = 'https://mouren-zhang.github.io/index.json'
     # url = 'http://127.0.0.1/mpda/index.json'
 
@@ -41,7 +34,7 @@ def updata():
     # 版本比对
     Version = r.json().get('mpda', {}).get('Version')
 
-    if Version == None or Version =='':
+    if Version == None or Version == '':
         return 'no'
 
     if Version != V:
@@ -55,8 +48,9 @@ def updata():
         for i in text:
             print(i)
 
-        print('#'*10)
+        print('#' * 10)
     return 'ok'
+
 
 def len_uuid(filename):
     """
@@ -89,23 +83,14 @@ def add_w():
     print('加载数据', len(lis), '个')
 
 
-def dat(name, nbtfile):
-    '''
-    提取值
-    :param dt:数据列表
-    :return: 值
-    '''
-
-    for i in range(len(nbtfile)):
-        if name in nbtfile[i][0]:
-            return str(nbtfile[i][1])
-
-
 def main():
     """
     主函数
     :return:None
     """
+    global data
+
+
     add_w()
     list_mod0 = []  # 生存模式
     list_mod1 = []  # 创造模式
@@ -115,46 +100,60 @@ def main():
     # 从列表获取文件路径
     for i in lis:
         nbtfile = nbt.NBTFile(i, 'rb')
-        
+
+
+        # 虽然恶臭，又不是不能用【狗头】
+
         # 转列表
-        nbtfile = str(nbtfile)[1:-1].replace(' ', '').replace('{', '').replace('}', '').replace('[', '').replace(']','').split(',')
+        nbtfile = str(nbtfile)[1:-1].replace(' ', '').replace('{', '').replace('}', '')
+        nbtfile = nbtfile.replace('[', '').replace(']','').split(',')
 
-        for ii in range(len(nbtfile)):
-            nbtfile[ii] = nbtfile[ii].split(':')
+        # 列表转dict
+        nbtfile = str(nbtfile)[1:-1].replace('):', ')":"')
+        nbtfile = json.loads('{'+nbtfile+'}')
 
-        a = dat('playerGameType', nbtfile)
 
-        if a == '0':
+        # 玩家游戏模式统计
+        if nbtfile.get("TAG_Int('playerGameType')") == '0':
             list_mod0.append(len_uuid(i))
-        elif a == '1':
+        elif nbtfile.get("TAG_Int('playerGameType')") == '1':
             list_mod1.append(len_uuid(i))
-        elif a == '2':
+        elif nbtfile.get("TAG_Int('playerGameType')") == '2':
             list_mod2.append(len_uuid(i))
-        elif a == '3':
+        elif nbtfile.get("TAG_Int('playerGameType')") == '3':
             list_mod3.append(len_uuid(i))
 
-    if prmod == 0:  # 统计模式
+        if prmod :
+            # 筛查模式
 
-        data = {
-            '生存': str(len(list_mod0)),
-            '创造': str(len(list_mod1)),
-            '冒险': str(len(list_mod2)),
-            '旁观': str(len(list_mod3)),
+            # 取游戏模式
+            if nbtfile.get("TAG_Int('playerGameType')") == '0':
+                playerGameType='生存'
+            elif nbtfile.get("TAG_Int('playerGameType')") == '1':
+                playerGameType='创造'
+            elif nbtfile.get("TAG_Int('playerGameType')") == '2':
+                playerGameType='冒险'
+            elif nbtfile.get("TAG_Int('playerGameType')") == '3':
+                playerGameType='旁观'
 
-        }
 
-    elif prmod == 1:  # 筛查模式
+            d = {
+                '游戏模式':playerGameType,
+                '经验等级':nbtfile.get("TAG_Int('XpLevel')")
+            }
+            # print(len_uuid(i))
 
-        data = {
-            '生存' + str(len(list_mod0)): list_mod0,
-            '创造' + str(len(list_mod1)): list_mod1,
-            '冒险' + str(len(list_mod2)): list_mod2,
-            '旁观' + str(len(list_mod3)): list_mod3,
-
-        }
+            data[str(len_uuid(i))] = d
+        else:
+            # 统计模式
+            data = {
+                '生存': str(len(list_mod0)),
+                '创造': str(len(list_mod1)),
+                '冒险': str(len(list_mod2)),
+                '旁观': str(len(list_mod3)),
+            }
 
     return data
-
 
 if __name__ == '__main__':
     try:
@@ -162,12 +161,12 @@ if __name__ == '__main__':
             print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
     except:
         print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
-
+    
     print('使用须知\n请不要用本程序去检索热文件，若因为使用不当造成的由使用者承担')
 
     print('0.统计模式\n1.筛查模式')
-    a = input('$:')
-    # a = '1'
+    # a = input('$:')
+    a = '0'
     if a == '0':
         prmod = 0
     elif a == '1':

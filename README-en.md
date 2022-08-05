@@ -21,10 +21,15 @@ re
 requests
 glob
 nbt
+json
 ````
 
 
 ### log
+
+#### 1.20
+> 1. Refactoring statistics mode
+> 2. Refactored output mode
 
 #### 1.14
 > Fix some bugs
