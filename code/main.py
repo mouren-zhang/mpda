@@ -136,7 +136,6 @@ def main():
             elif nbtfile.get("TAG_Int('playerGameType')") == '3':
                 playerGameType='旁观'
 
-
             d = {
                 '游戏模式':playerGameType,
                 '经验等级':nbtfile.get("TAG_Int('XpLevel')")
