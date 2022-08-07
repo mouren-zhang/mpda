@@ -11,13 +11,13 @@ lis = []
 prmod = 0  # 0仅显示数量 1显示数量+uuid
 data = {}
 
+
 def main():
     """
     主函数
     :return:None
     """
     global data
-
 
     add_w()
     list_mod0 = []  # 生存模式
@@ -29,17 +29,15 @@ def main():
     for i in lis:
         nbtfile = nbt.NBTFile(i, 'rb')
 
-
         # 虽然恶臭，又不是不能用【狗头】
 
         # 转列表
         nbtfile = str(nbtfile)[1:-1].replace(' ', '').replace('{', '').replace('}', '')
-        nbtfile = nbtfile.replace('[', '').replace(']','').split(',')
+        nbtfile = nbtfile.replace('[', '').replace(']', '').split(',')
 
         # 列表转dict
         nbtfile = str(nbtfile)[1:-1].replace('):', ')":"')
-        nbtfile = json.loads('{'+nbtfile+'}')
-
+        nbtfile = json.loads('{' + nbtfile + '}')
 
         # 玩家游戏模式统计
         if nbtfile.get("TAG_Int('playerGameType')") == '0':
@@ -51,19 +49,20 @@ def main():
         elif nbtfile.get("TAG_Int('playerGameType')") == '3':
             list_mod3.append(len_uuid(i))
 
-        if prmod :
+        if prmod:
             # 筛查模式
 
             # 取游戏模式
             if nbtfile.get("TAG_Int('playerGameType')") == '0':
-                playerGameType='生存'
+                playerGameType = '生存'
             elif nbtfile.get("TAG_Int('playerGameType')") == '1':
-                playerGameType='创造'
+                playerGameType = '创造'
             elif nbtfile.get("TAG_Int('playerGameType')") == '2':
-                playerGameType='冒险'
+                playerGameType = '冒险'
             elif nbtfile.get("TAG_Int('playerGameType')") == '3':
-                playerGameType='旁观'
-
+                playerGameType = '旁观'
+            else:
+                playerGameType = '获取是吧'
 
             world = nbtfile.get("TAG_String('Dimension')")
             if world == 'minecraft:overworld':
@@ -74,9 +73,9 @@ def main():
                 world = '末地'
 
             d = {
-                '游戏模式':playerGameType,
-                '经验等级':nbtfile.get("TAG_Int('XpLevel')"),
-                '所处世界':world
+                '游戏模式': playerGameType,
+                '经验等级': nbtfile.get("TAG_Int('XpLevel')"),
+                '所处世界': world
             }
             # print(len_uuid(i))
 
@@ -91,7 +90,6 @@ def main():
             }
 
     return data
-
 
 
 def updata():
@@ -165,22 +163,21 @@ def add_w():
     print('加载数据', len(lis), '个')
 
 
-
 if __name__ == '__main__':
     try:
         if updata() == 'no':
             print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
     except:
         print('检查更新失败，请自行确认更新\nhttps://github.com/mouren-zhang/mpda')
-    
+
     print('使用须知\n请不要用本程序去检索热文件，若因为使用不当造成的由使用者承担')
 
     pr_dt = {
-        '0':'统计模式',
-        '1':'筛查模式'
+        '0': '统计模式',
+        '1': '筛查模式'
     }
-    for k,v in pr_dt.items():
-        print(k,v)
+    for k, v in pr_dt.items():
+        print(k, v)
     a = input('$:')
     # a = '0'
     if a == '0':
