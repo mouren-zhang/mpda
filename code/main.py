@@ -52,34 +52,23 @@ def main():
         if prmod:
             # 筛查模式
 
-            # 取游戏模式
-            if nbtfile.get("TAG_Int('playerGameType')") == '0':
-                playerGameType = '生存'
-            elif nbtfile.get("TAG_Int('playerGameType')") == '1':
-                playerGameType = '创造'
-            elif nbtfile.get("TAG_Int('playerGameType')") == '2':
-                playerGameType = '冒险'
-            elif nbtfile.get("TAG_Int('playerGameType')") == '3':
-                playerGameType = '旁观'
-            else:
-                playerGameType = '获取是吧'
+            playerGameType = get_playerGameType(nbtfile,"TAG_Int('playerGameType')")
 
-            world = nbtfile.get("TAG_String('Dimension')")
-            if world == 'minecraft:overworld':
-                world = '主世界'
-            elif world == 'minecraft:the_nether':
-                world = '下界(地狱)'
-            elif world == 'minecraft:the_end':
-                world = '末地'
+            xpLevel = get_xpLevel(nbtfile,"TAG_Int('XpSeed')")
+
+            world = get_world(nbtfile,"TAG_String('Dimension')")
+
+            Health = get_health(nbtfile,"TAG_Float('Health')")
 
             d = {
                 '游戏模式': playerGameType,
-                '经验等级': nbtfile.get("TAG_Int('XpLevel')"),
-                '所处世界': world
+                '经验等级': xpLevel,
+                '所处世界': world,
+                '健康状态':Health
             }
-            # print(len_uuid(i))
 
             data[str(len_uuid(i))] = d
+
         else:
             # 统计模式
             data = {
@@ -90,6 +79,45 @@ def main():
             }
 
     return data
+
+def get_health(nbt,key):
+    return nbt.get(key)
+
+
+def get_xpLevel(nbt,key):
+    return nbt.get(key)
+
+
+def get_world(nbt,key):
+
+    world = nbt.get(key)
+
+    if world == 'minecraft:overworld':
+        world = '主世界'
+    elif world == 'minecraft:the_nether':
+        world = '下界(地狱)'
+    elif world == 'minecraft:the_end':
+        world = '末地'
+
+    return world
+
+
+def get_playerGameType(nbt,key):
+    # 取游戏模式
+    playerGameType_mod = nbt.get(key)
+
+    if playerGameType_mod == '0':
+        playerGameType = '生存'
+    elif playerGameType_mod == '1':
+        playerGameType = '创造'
+    elif playerGameType_mod == '2':
+        playerGameType = '冒险'
+    elif playerGameType_mod == '3':
+        playerGameType = '旁观'
+    else:
+        playerGameType = '获取失败'
+
+    return playerGameType
 
 
 def updata():
