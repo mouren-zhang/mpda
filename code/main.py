@@ -60,9 +60,12 @@ def main():
 
             Health = get_health(nbtfile,"TAG_Float('Health')")
 
+            XpTotal = get_xptotal(nbtfile,"TAG_Int('XpTotal')")
+
             d = {
                 '游戏模式': playerGameType,
                 '经验等级': xpLevel,
+                '经验总数':XpTotal,
                 '所处世界': world,
                 '健康状态':Health
             }
@@ -79,6 +82,10 @@ def main():
             }
 
     return data
+
+def get_xptotal(nbt,key):
+    return nbt.get(key)
+
 
 def get_health(nbt,key):
     return nbt.get(key)
