@@ -54,7 +54,7 @@ def main():
 
             playerGameType = get_playerGameType(nbtfile,"TAG_Int('playerGameType')")
 
-            xpLevel = get_xpLevel(nbtfile,"TAG_Int('XpSeed')")
+            xpLevel = get_xpLevel(nbtfile,"TAG_Int('XpLevel')")
 
             world = get_world(nbtfile,"TAG_String('Dimension')")
 
@@ -62,12 +62,16 @@ def main():
 
             XpTotal = get_xptotal(nbtfile,"TAG_Int('XpTotal')")
 
+            seenCredits = get_seenCredits(nbtfile,"TAG_Byte('seenCredits')")
+
+
             d = {
                 '游戏模式': playerGameType,
                 '经验等级': xpLevel,
                 '经验总数':XpTotal,
                 '所处世界': world,
-                '健康状态':Health
+                '健康状态':Health,
+                '去过下界':seenCredits
             }
 
             data[str(len_uuid(i))] = d
@@ -83,12 +87,26 @@ def main():
 
     return data
 
+def get_seenCredits(nbt,key):
+    yn = nbt.get(key)
+
+    if yn == '1':
+        return '去过'
+
+    elif yn == '0':
+        return '还没'
+
+    else:
+        return '未知'
+
+
 def get_xptotal(nbt,key):
     return nbt.get(key)
 
 
 def get_health(nbt,key):
-    return nbt.get(key)
+    return nbt.get(key)[:4]
+
 
 
 def get_xpLevel(nbt,key):
