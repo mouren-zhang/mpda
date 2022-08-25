@@ -64,6 +64,9 @@ def main():
 
             seenCredits = get_seenCredits(nbtfile,"TAG_Byte('seenCredits')")
 
+            FallFlying = get_FallFlying(nbtfile,"TAG_Byte('FallFlying')")
+
+            FallDistance = get_FallDistance(nbtfile,"TAG_Float('FallDistance')")
 
             d = {
                 '游戏模式': playerGameType,
@@ -71,7 +74,9 @@ def main():
                 '经验总数':XpTotal,
                 '所处世界': world,
                 '健康状态':Health,
-                '去过下界':seenCredits
+                '去过下界':seenCredits,
+                '是否飞行':FallFlying,
+                '坠落距离':FallDistance,
             }
 
             data[str(len_uuid(i))] = d
@@ -86,6 +91,24 @@ def main():
             }
 
     return data
+
+
+
+def get_FallDistance(nbt,key):
+    return nbt.get(key)
+
+
+def get_FallFlying(nbt,key):
+    a = nbt.get(key)
+
+    if a =='1':
+
+        return '是'
+    elif a == '0':
+        return '否'
+    else:
+        return '未知/出错'
+
 
 def get_seenCredits(nbt,key):
     yn = nbt.get(key)
