@@ -52,31 +52,91 @@ def main():
         if prmod:
             # 筛查模式
 
-            playerGameType = get_playerGameType(nbtfile,"TAG_Int('playerGameType')")
+            playerGameType = get_playerGameType(nbtfile, "TAG_Int('playerGameType')")
 
-            xpLevel = get_xpLevel(nbtfile,"TAG_Int('XpLevel')")
+            xpLevel = nbtfile.get(nbtfile, "TAG_Int('XpLevel')")
 
-            world = get_world(nbtfile,"TAG_String('Dimension')")
+            world = get_world(nbtfile, "TAG_String('Dimension')")
 
-            Health = get_health(nbtfile,"TAG_Float('Health')")
+            Health = nbtfile.get(nbtfile, "TAG_Float('Health')")
 
-            XpTotal = get_xptotal(nbtfile,"TAG_Int('XpTotal')")
+            XpTotal = nbtfile.get(nbtfile, "TAG_Int('XpTotal')")
 
-            seenCredits = get_seenCredits(nbtfile,"TAG_Byte('seenCredits')")
+            seenCredits = get_seenCredits(nbtfile, "TAG_Byte('seenCredits')")
 
-            FallFlying = get_FallFlying(nbtfile,"TAG_Byte('FallFlying')")
+            FallFlying = get_FallFlying(nbtfile, "TAG_Byte('FallFlying')")
 
-            FallDistance = get_FallDistance(nbtfile,"TAG_Float('FallDistance')")
+            FallDistance = nbtfile.get(nbtfile, "TAG_Float('FallDistance')")
+
+            HurtByTimestamp = nbtfile.get(nbtfile, "TAG_Int('HurtByTimestamp')")
+
+            SleepTimer = nbtfile.get(nbtfile, "TAG_Short('SleepTimer')")
+
+            Invulnerable = nbtfile.get(nbtfile, "TAG_Byte('Invulnerable')")
+
+
+
+
+            PortalCooldown = nbtfile.get("TAG_Int('PortalCooldown')")
+
+            AbsorptionAmount = nbtfile.get("TAG_Float('AbsorptionAmount')")
+
+            DeathTime = nbtfile.get("TAG_Short('DeathTime')")
+
+            foodSaturationLevel = nbtfile.get("TAG_Float('foodSaturationLevel')")
+
+            foodExhaustionLevel = nbtfile.get("TAG_Float('foodExhaustionLevel')")
+
+            OnGround = nbtfile.get("TAG_Byte('OnGround')")
+
+            Score = nbtfile.get("TAG_Int('Score')")
+
+            Fire = nbtfile.get("TAG_Short('Fire')")
+
+            XpP = nbtfile.get("TAG_Float('XpP')")
+
+            DataVersion = nbtfile.get("TAG_Int('DataVersion')")
+
+            foodLevel = nbtfile.get("TAG_Int('foodLevel')")
+
+            foodTickTimer = nbtfile.get("TAG_Int('foodTickTimer')")
+
+            HurtTime = nbtfile.get("TAG_Short('HurtTime')")
+
+            XpSeed = nbtfile.get("TAG_Int('XpSeed')")
+
+            SelectedItemSlot = nbtfile.get("TAG_Int('SelectedItemSlot')")
+
+            Air = nbtfile.get("TAG_Short('Air')")
 
             d = {
                 '游戏模式': playerGameType,
                 '经验等级': xpLevel,
-                '经验总数':XpTotal,
+                '经验总数': XpTotal,
                 '所处世界': world,
-                '健康状态':Health,
-                '去过下界':seenCredits,
-                '是否飞行':FallFlying,
-                '坠落距离':FallDistance,
+                '健康状态': Health,
+                '去过下界': seenCredits,
+                '是否飞行': FallFlying,
+                '时间伤害': HurtByTimestamp,
+                '入睡经过': SleepTimer,
+                '坠落距离': FallDistance,
+                '抵消伤害': Invulnerable,
+                '传送门冷却': PortalCooldown,
+                '伤害吸收': AbsorptionAmount,
+                '死亡时间': DeathTime,
+                '当前饱食度': foodLevel,
+                '饱回血间隔': foodTickTimer,
+                '饱和度等级': foodSaturationLevel,
+                '饥饿度等级': foodExhaustionLevel,
+                '是否在地上': OnGround,
+                '死亡分数': Score,
+                '升级百分比': XpP,
+                '游戏版本': DataVersion,
+                '附魔台种子': XpSeed,
+                '右手槽位': SelectedItemSlot,
+                '头在方块？': Air,
+                '火焰伤害？': Fire,
+                '持续伤害？': HurtTime,
             }
 
             data[str(len_uuid(i))] = d
@@ -94,14 +154,10 @@ def main():
 
 
 
-def get_FallDistance(nbt,key):
-    return nbt.get(key)
-
-
-def get_FallFlying(nbt,key):
+def get_FallFlying(nbt, key):
     a = nbt.get(key)
 
-    if a =='1':
+    if a == '1':
 
         return '是'
     elif a == '0':
@@ -110,7 +166,7 @@ def get_FallFlying(nbt,key):
         return '未知/出错'
 
 
-def get_seenCredits(nbt,key):
+def get_seenCredits(nbt, key):
     yn = nbt.get(key)
 
     if yn == '1':
@@ -123,21 +179,9 @@ def get_seenCredits(nbt,key):
         return '未知'
 
 
-def get_xptotal(nbt,key):
-    return nbt.get(key)
 
 
-def get_health(nbt,key):
-    return nbt.get(key)[:4]
-
-
-
-def get_xpLevel(nbt,key):
-    return nbt.get(key)
-
-
-def get_world(nbt,key):
-
+def get_world(nbt, key):
     world = nbt.get(key)
 
     if world == 'minecraft:overworld':
@@ -150,7 +194,7 @@ def get_world(nbt,key):
     return world
 
 
-def get_playerGameType(nbt,key):
+def get_playerGameType(nbt, key):
     # 取游戏模式
     playerGameType_mod = nbt.get(key)
 
